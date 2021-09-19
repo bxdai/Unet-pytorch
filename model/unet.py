@@ -85,10 +85,10 @@ class Up(nn.Module):
             #这个是解决填充不一致的问题
             diffY = x2.size()[2] - x1.size()[2]
             diffX = x2.size()[3] - x1.size()[3]
-            print('sizes',x1.size(),x2.size(),diffX // 2, diffX - diffX//2, diffY // 2, diffY - diffY//2)
+            #print('sizes',x1.size(),x2.size(),diffX // 2, diffX - diffX//2, diffY // 2, diffY - diffY//2)
             x1 = F.pad(x1, (diffX // 2, diffX - diffX//2,
                             diffY // 2, diffY - diffY//2))
-            print("pad x1:",x1.size())
+            #print("pad x1:",x1.size())
         x = torch.cat([x2, x1], dim=1)
         x = self.conv(x)
         return x
@@ -133,26 +133,26 @@ class UNet(nn.Module):
 
     def forward(self,x):
         x0 = self.start(x) #3-64
-        print(x0.shape)
+        #print(x0.shape)
         x1 = self.down1(x0)#64-128
-        print(f"x1.shape:\n{x1.shape}")
+        #print(f"x1.shape:\n{x1.shape}")
         x2 = self.down2(x1)#128-246
-        print(f"x2.shape:\n{x2.shape}")
+        #print(f"x2.shape:\n{x2.shape}")
         x3 = self.down3(x2)#256-512
-        print(f"x3.shape:\n{x3.shape}")
+        #print(f"x3.shape:\n{x3.shape}")
         x4 = self.down4(x3)#512-1024
-        print(f"x4.shape:\n{x4.shape}")
+        #print(f"x4.shape:\n{x4.shape}")
 
         x = self.up1(x4, x3)#1024-512
-        print(f"x.shape:\n{x.shape}")
+        #print(f"x.shape:\n{x.shape}")
         x = self.up2(x, x2)#512-256
-        print(f"x.shape:\n{x.shape}")
+        #print(f"x.shape:\n{x.shape}")
         x = self.up3(x, x1)#256-128
-        print(f"x.shape:\n{x.shape}")
+        #print(f"x.shape:\n{x.shape}")
         x = self.up4(x, x0)#128-64
-        print(f"x.shape:\n{x.shape}")
+        #print(f"x.shape:\n{x.shape}")
         logits = self.final_conv(x)
-        print(f"logits:\n{logits.shape}")
+        #print(f"logits:\n{logits.shape}")
         return logits
 
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     x = torch.randn(1,1,572,572)
     out = net(x).to(dev)
     #print(net)
-    #print(out.shape)
+    print(out.shape)
 
 
      
