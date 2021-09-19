@@ -80,14 +80,15 @@ class Up(nn.Module):
         #x1是上采样获得的特征
         #x2是下采样获得的特征
         x1 = self.up(x1)
-
-        #input is CHW
-        #这个是解决填充不一致的问题
-        diffY = x2.size()[2] - x1.size()[2]
-        diffX = x2.size()[3] - x1.size()[3]
-        print('sizes',x1.size(),x2.size(),diffX // 2, diffX - diffX//2, diffY // 2, diffY - diffY//2)
-        x1 = F.pad(x1, (diffX // 2, diffX - diffX//2,
-                        diffY // 2, diffY - diffY//2))
+        if (x1.size(2) != x2.size(2)) or (x1.size(3) != x2.size(3)):
+            #input is CHW
+            #这个是解决填充不一致的问题
+            diffY = x2.size()[2] - x1.size()[2]
+            diffX = x2.size()[3] - x1.size()[3]
+            print('sizes',x1.size(),x2.size(),diffX // 2, diffX - diffX//2, diffY // 2, diffY - diffY//2)
+            x1 = F.pad(x1, (diffX // 2, diffX - diffX//2,
+                            diffY // 2, diffY - diffY//2))
+            print("pad x1:",x1.size())
         x = torch.cat([x2, x1], dim=1)
         x = self.conv(x)
         return x
@@ -143,22 +144,21 @@ class UNet(nn.Module):
         print(f"x4.shape:\n{x4.shape}")
 
         x = self.up1(x4, x3)#1024-512
-        print(x.shape)
-        print(f"x2.shape:\n{x2.shape}")
+        print(f"x.shape:\n{x.shape}")
         x = self.up2(x, x2)#512-256
-        print(x.shape)
+        print(f"x.shape:\n{x.shape}")
         x = self.up3(x, x1)#256-128
-        print(x.shape)
+        print(f"x.shape:\n{x.shape}")
         x = self.up4(x, x0)#128-64
-        print(x.shape)
+        print(f"x.shape:\n{x.shape}")
         logits = self.final_conv(x)
-        print(logits.shape)
+        print(f"logits:\n{logits.shape}")
         return logits
 
 
 
 if __name__ == '__main__':
-    net = UNet(n_channels=1,n_classes=2,bilinear=True)
+    net = UNet(n_channels=1,n_classes=2,bilinear=False)
     dev = ('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(dev)
     x = torch.randn(1,1,572,572)
