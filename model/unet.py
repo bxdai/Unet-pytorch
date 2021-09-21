@@ -17,6 +17,7 @@ class DoubleConv(nn.Module):
         super().__init__()
 
         #这部分和论文不一样,多了个中间输入的channel
+        #如果使用中间channel,然后在卷积到out_channel
         if not mid_channels:
             mid_channels = out_channels
         self.double_conv = nn.Sequential(
@@ -163,7 +164,7 @@ if __name__ == '__main__':
     print(dev)
     x = torch.randn(1,1,572,572)
     out = net(x).to(dev)
-    #print(net)
+    print(net)
     print(out.shape)
 
 
