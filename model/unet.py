@@ -2,7 +2,7 @@
 #%%
 import torch
 from torch import cuda
-from torch._C import device
+from torch._C import Value, device
 from torch.distributed import is_available
 import torch.nn as nn
 import torch.nn.functional as F
@@ -161,11 +161,17 @@ class UNet(nn.Module):
 if __name__ == '__main__':
     net = UNet(n_channels=1,n_classes=2,bilinear=False)
     dev = ('cuda:0' if torch.cuda.is_available() else 'cpu')
-    print(dev)
-    x = torch.randn(1,1,572,572)
-    out = net(x).to(dev)
-    print(net)
-    print(out.shape)
+
+    with open('log.txt','w') as fp:
+
+        for name,param in net.named_parameters():
+            print(f"name={name}:param={param}",file = fp)
+
+    # print(dev)
+    # x = torch.randn(1,1,572,572)
+    # out = net(x).to(dev)
+    # print(net)
+    # print(out.shape)
 
 
      
